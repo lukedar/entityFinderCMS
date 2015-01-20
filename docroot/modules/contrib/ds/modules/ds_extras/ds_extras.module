@@ -1,0 +1,336 @@
+<?php
+/**
+ * @file
+ * Display Suite extras main functions.
+ */
+
+use Drupal\Component\Utility\String;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FieldDefinition;
+use Drupal\Core\Render\Element;
+use Drupal\ds\Ds;
+use Drupal\entity\Entity\EntityViewDisplay;
+
+/**
+ * Implements hook_library_info().
+ */
+function ds_extras_library_info() {
+  $libraries['ds_extras.settings'] = array(
+    'title' => 'Display Suite Extras settings',
+    'version' => \Drupal::VERSION,
+    'js' => array(
+      drupal_get_path('module', 'ds_extras') . '/js/ds_extras.admin.js' => array(),
+    ),
+    'dependencies' => array(
+      array('system', 'jquery'),
+      array('system', 'drupal'),
+      array('system', 'drupal.form'),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Implements hook_ds_layout_info_alter().
+ */
+function ds_extras_ds_layout_info_alter(&$layouts) {
+  if (\Drupal::config('ds.extras')->get('hidden_region')) {
+    foreach ($layouts as $key => $layout) {
+      $layouts[$key]['regions']['ds_hidden'] = t('Hidden');
+    }
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function ds_extras_permission() {
+  $permissions = array();
+
+  // Extra check to make sure this doesn't get fired on install.
+  if (\Drupal::config('ds.extras')->get('switch_view_mode')) {
+    foreach (node_type_get_names() as $key => $name) {
+      $permissions['ds_switch ' . $key] = array(
+        'title' => t('Switch view modes on :type', array(':type' => $name))
+      );
+    }
+  }
+
+  if (\Drupal::config('ds.extras')->get('field_permissions')) {
+    $entities = \Drupal::entityManager()->getDefinitions();
+    foreach ($entities as $entity_type => $info) {
+      $fields = Ds::getFields($entity_type);
+      foreach ($fields as $key => $finfo) {
+        $permissions['view ' . $key . ' on ' . $entity_type] = array(
+          'title' => t('View !field on !entity_type', array('!field' => $finfo['title'], '!entity_type' => $info->getLabel())),
+        );
+      }
+    }
+  }
+
+  return $permissions;
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function ds_extras_module_implements_alter(&$implementations, $hook) {
+  // Because it's possible to turn on/off features for DS extras,
+  // we'll unset hooks here if necessary which otherwise do nothing at all.
+
+  // Region to block
+  $region_hooks = array(
+    'ds_layout_region_alter',
+    'entity_view_alter',
+  );
+  if (!\Drupal::config('ds.extras')->get('region_to_block') && in_array($hook, $region_hooks)) {
+    unset($implementations['ds_extras']);
+  }
+
+  // Extra fields
+  $extra_fields_hooks = array(
+    'field_extra_fields',
+  );
+  if (!\Drupal::config('ds.extras')->get('fields_extra') && in_array($hook, $extra_fields_hooks)) {
+    unset($implementations['ds_extras']);
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ds_extras_form_field_ui_display_overview_form_alter(&$form, &$form_state) {
+  form_load_include($form_state, 'inc', 'ds_extras', 'includes/admin');
+  ds_extras_field_ui_alter($form, $form_state);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ds_extras_form_ds_admin_form_alter(&$form, &$form_state) {
+  form_load_include($form_state, 'inc', 'ds_extras', 'includes/admin');
+  ds_extras_settings_alter($form, $form_state);
+}
+
+/**
+ * DS fields access.
+ *
+ * @param $field
+ *   The machine name of the field
+ * @param $entity_type
+ *   The name of the entity type.
+ *
+ * @return bool
+ */
+function ds_extras_ds_field_access($field, $entity_type) {
+  if (\Drupal::currentUser()->hasPermission('view ' . $field . ' on ' . $entity_type)) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/**
+ * Implements hook_entity_view_alter().
+ */
+function ds_extras_entity_view_alter(&$build, EntityInterface $entity, EntityViewDisplay $display) {
+
+  $entity_type = $entity->getEntityTypeId();
+  $bundle = $entity->bundle();
+  $view_mode = $display->mode;
+
+  $block_data = &drupal_static('ds_block_region');
+  $region_blocks = \Drupal::config('ds.extras')->get('region_blocks');
+
+  if (empty($region_blocks) || empty($build)) {
+    return;
+  }
+
+  $properties = array();
+  foreach (Element::properties($build) as $property) {
+    $properties[$property] = $build[$property];
+  }
+  $properties['#view_mode'] = $view_mode;
+
+  if ($layout = Ds::getLayout($entity_type, $bundle, $view_mode)) {
+    foreach ($region_blocks as $block_key => $block) {
+      if ($block['info'] == "{$entity_type}_{$bundle}_{$view_mode}" && isset($layout['settings']['regions'][$block_key]) && !empty($layout['settings']['regions'][$block_key])) {
+        foreach ($layout['settings']['regions'][$block_key] as $field) {
+          if (isset($build[$field])) {
+            $block_data[$block_key][$field] = $build[$field];
+            unset($build[$field]);
+          }
+        }
+        if (isset($block_data[$block_key]) && is_array($block_data[$block_key])) {
+          $block_data[$block_key] += $properties;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Utility function to return the view mode for the current entity.
+ *
+ * The drupal_static is called in ds_extras_node_show to set
+ * the current view mode. Through this technique, the hide page
+ * title functionality can also work across other view modes
+ * if another one is chosen for the full page of the node.
+ */
+function ds_extras_get_view_mode() {
+  return drupal_static('ds_extras_view_mode');
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function ds_extras_form_alter(&$form, &$form_state) {
+
+  if (isset($form['#entity_type']) && $form['#entity_type'] == 'node' && isset($form_state['controller'])) {
+    // Switch full view mode.
+    $node = $form_state['controller']->getEntity($form_state);
+
+    if (\Drupal::currentUser()->hasPermission('ds_switch ' . $node->bundle())) {
+      // Get the view modes.
+      $ds_vm = entity_get_view_modes('node');
+      $layouts = array();
+      $options = array('' => t('Default'));
+      foreach ($ds_vm as $key => $item) {
+        $overridden = FALSE;
+        $entity_display = entity_load('entity_view_display', 'node.' . $node->bundle() . '.' . $key);
+        if ($entity_display) {
+          $overridden = $entity_display->status();
+        }
+        if ($overridden) {
+          $layout = Ds::getLayout('node', $node->bundle(), $key, FALSE);
+          $layouts[$key] = $layout;
+          $options[$key] = $item['label'];
+        }
+      }
+
+      // Add default layout settings
+      $layouts[''] = Ds::getLayout('node', $node->bundle(), 'default', FALSE);
+
+      // Only fire if we have more than 1 option.
+      if (count($options) > 1) {
+
+        if (!isset($form['ds_extras'])) {
+          $form['ds_extras'] = array(
+            '#type' => 'details',
+            '#title' => t('Display settings'),
+            '#collapsed' => TRUE,
+            '#group' => 'advanced',
+            '#weight' => 100,
+          );
+        }
+
+        $form['ds_extras']['ds_switch'] = array(
+          '#type' => 'select',
+          '#title' => t('View mode'),
+          '#options' => $options,
+          '#default_value' => $node->get('ds_switch')->value,
+          '#description' => t('Switch to a different view mode to display the full page view of this node.'),
+          '#weight' => -1,
+          '#ajax' => array(
+            'callback' => 'ds_extras_switch_view_mode_preview_callback',
+            'wrapper' => 'ds_switch_preview_wrapper',
+          ),
+        );
+
+        $form['ds_extras']['preview'] = array(
+          '#type' => 'container',
+          '#prefix' => '<div id="ds_switch_preview_wrapper">',
+          '#suffix' => '</div>',
+        );
+
+        $mode = isset($form_state['input']['ds_switch']) ? $form_state['input']['ds_switch'] : $node->get('ds_switch')->value;
+        $chosen_layout = $layouts[$mode];
+
+        $fallback_image = drupal_get_path('module', 'ds') . '/images/preview.png';
+        $image = (isset($chosen_layout['image']) && !empty($chosen_layout['image'])) ? $chosen_layout['path'] . '/' . $chosen_layout['layout'] . '.png' : $fallback_image;
+
+        $form['ds_extras']['preview']['image'] = array(
+          '#markup' => '<div class="ds-layout-preview-image"><img src="' . base_path() . $image . '"/></div>',
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Ajax callback for _ds_field_ui_table_layouts_preview().
+ */
+function ds_extras_switch_view_mode_preview_callback($form, $form_state) {
+  return $form['ds_extras']['preview'];
+}
+
+/**
+ * Implements hook_entity_field_info_alter()
+ */
+function ds_extras_entity_field_info_alter(&$info, $entity_type) {
+  if ($entity_type == 'node') {
+    // Set the ds field as proper field
+    $info['definitions']['ds_switch'] = FieldDefinition::create('string')
+      ->setLabel(t('DS switch'))
+      ->setName('ds_switch')
+      ->setDescription(t('Holds the DS view mode of the node.'))
+      ->setSetting('default_value', '')
+      ->setPropertyConstraints('value', array('Length' => array('max' => 255)));
+  }
+}
+
+/**
+ * Implements hook_ds_layout_region_alter().
+ */
+function ds_extras_ds_layout_region_alter($context, &$region_info) {
+
+  $region_blocks = \Drupal::config('ds.extras')->get('region_blocks');
+
+  // Bail out if region_blocks is empty or we are working on default view mode.
+  if (empty($region_blocks) || $context['view_mode'] == 'default') {
+    return;
+  }
+
+  $entity_type = $context['entity_type'];
+  $bundle = $context['bundle'];
+  $view_mode = $context['view_mode'];
+
+  foreach ($region_blocks as $block_key => $block) {
+    if ($block['info'] == "{$entity_type}_{$bundle}_{$view_mode}") {
+      $region_info['region_options'][$block_key] = $block['title'];
+      if (isset($region_info['table_regions'])) {
+        $region_info['table_regions'][$block_key] = array(
+          'title' => String::checkPlain($block['title']),
+          'message' => t('No fields are displayed in this region'),
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_extra_fields().
+ */
+function ds_extras_field_extra_fields() {
+  $extra = array();
+
+  if (\Drupal::config('ds.extras')->get('fields_extra')) {
+    $fields = \Drupal::config('ds.extras')->get('fields_extra_list');
+    if (empty($fields)) {
+      return $extra;
+    }
+    foreach ($fields as $field) {
+      $field = trim($field);
+      if (!empty($field)) {
+        list($entity, $bundle, $field_name) = explode('|', $field);
+        $extra[String::checkPlain($entity)][String::checkPlain($bundle)]['display'][$field_name] = array(
+          'label' => drupal_ucfirst(str_replace('_', ' ', String::checkPlain($field_name))),
+          'description' => drupal_ucfirst(str_replace('_', ' ', String::checkPlain($field_name))),
+          'weight' => 0,
+        );
+      }
+    }
+  }
+
+  return $extra;
+}

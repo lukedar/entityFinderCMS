@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * @file
+ * Display Suite UI.
+ */
+
+define('DS_FIELD_TYPE_TOKEN', 'token');
+define('DS_FIELD_TYPE_BLOCK', 'block');
+define('DS_FIELD_TYPE_COPY', 'copy');
+
+/**
+ * Implements hook_permission().
+ */
+function ds_ui_permission() {
+  return array(
+    'admin fields' => array(
+      'title' => t('Administer fields'),
+      'description' => t('Manage fields for every entity.')
+    ),
+    'admin classes' => array(
+      'title' => t('Administer classes'),
+      'description' => t('Manage classes.')
+    ),
+  );
+}

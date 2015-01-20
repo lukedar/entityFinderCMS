@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * Display Suite forms install file.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function ds_forms_install() {
+  module_set_weight('ds_forms', 20);
+}

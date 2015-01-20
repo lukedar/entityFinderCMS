@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @file
+ * Display Suite search.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function ds_search_help($path, $arg) {
+  switch ($path) {
+    case 'admin/structure/ds/list/search':
+      $output = '<dl>';
+      $output .= '<dt>' . t('Display Suite defines its own search type for search. You need to enable it at !url when you are going to use Drupal core search. You do not have to enable and use it when using the Apachesolr module. Search results will be themed on the default Apachesolr pages.', array('!url' => l('search settings', 'admin/config/search/settings'))) . '</dt>';
+      $output .= '</dl>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ds_search_theme() {
+  return array(
+    'ds_search_page' => array(
+      'render element' => 'element',
+      'variables' => array('build' => NULL)
+    ),
+  );
+}
+
+/**
+ * Search page theming.
+ */
+function theme_ds_search_page($build) {
+
+  // This is probably because we don't declare anything in ds_search_theme().
+  unset($build['theme_hook_original']);
+
+  // Check on empty search results.
+  if (empty($build['build']['search_results'])) {
+
+    // Alter the title and extra variables.
+    if (!empty($build['build']['search_title'])) {
+      $build['build']['search_title']['#markup'] = '<h2>' . t('Your search yielded no results') . '</h2>';
+      unset($build['build']['search_extra']);
+    }
+
+    $build['build']['search_empty'] = array('#markup' => search_help('search#noresults', drupal_help_arg()));
+  }
+
+  $build['build']['search_results']['#sorted'] = TRUE;
+
+  return drupal_render($build);
+}
