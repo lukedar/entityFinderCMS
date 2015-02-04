@@ -1,0 +1,90 @@
+# Ignore paths that contain user-generated content.
+docroot/sites/*/files
+docroot/sites/*/private
+docroot/files/*
+docroot/cache/normal
+
+# Ignore CSS files in the Big Brother theme (these are created by Compass watch/compile)
+
+# ** Only works in OSs that support newer versions of fnmatch (Bash 4+)
+docroot/sites/default/**/files
+docroot/sites/default/**/private
+
+local.settings.php
+post-commit.php
+
+# Packages #
+############
+*.7z
+*.dmg
+*.bz2
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.tgz
+
+
+# Logs and databases #
+######################
+*.log
+
+
+# OS generated files #
+######################
+.DS_Store*
+ehthumbs.db
+Thumbs.db
+._*
+*~
+
+# Vim generated files #
+######################
+*.un~
+*.swp
+
+# SASS #
+##########
+.sass-cache
+
+# Ignore Eclipse IDE stuff
+.buildpath
+.project
+.settings/*
+.settings
+.DS_Store
+
+# Ignore Netbeans IDE stuff
+nbproject/*
+build.xml
+build/*
+nbbuild/*
+dist/*
+nbdist/*
+nbactions.xml
+nb-configuration.xml
+
+# Ignore PHPStore IDE stuff
+.idea
+
+# Ignore Intellij stuff
+*.iws
+*.iml
+
+#ignore node_modules
+**/node_modules
+**/npm-debug.log
+**/.sass-cache
+node_modules
+
+# Ignore Vagrant tmp files
+.vagrant/
+
+# ignore grunted files
+docroot/sites/all/themes/milkshake/css/**/*
+docroot/sites/all/themes/milkshake/js/app.js
+
+# ignore Primetime player output directory
+docroot/primetimeplayer/
+primetimeplayer/sample/PrimetimeReference/src/out
