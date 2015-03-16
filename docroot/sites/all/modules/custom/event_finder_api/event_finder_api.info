@@ -1,0 +1,4 @@
+name = Event Finder API 
+description = Customises services api endpoint
+package = Event Finder
+core = 7.x

@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * @file
+ * event_finder_api module
+ */
+
+/*
+ * Implements hook_node_load().
+ */
+function event_finder_api_node_load($nodes, $types) {
+  foreach ($nodes as $node) {
+    //$node->custom_field = 'SOME SHITE';
+  }
+}
+
+/*
+ * Implements hook_services_request_postprocess_alter().
+ */
+function event_finder_api_services_request_postprocess_alter($controller, $args, &$result) {
+
+  if (isset($result->nid)) {
+    switch ($result->type) {
+      case 'event':
+
+        $event_description = _event_finder_api_get_node_field_value('field_event_description', $result);
+        $result->field_event_description = $event_description;
+
+        break;
+
+      case 'location':
+      
+        $location_description = _event_finder_api_get_node_field_value('field_location_description', $result);
+        $result->field_location_description = $location_description;
+       
+        break;
+    }
+  }
+}
+
+
+
+/*
+ * Helper function that returns field value.
+ */
+function _event_finder_api_get_node_field_value($field_name, $entity) {
+  $field_name = field_get_items('node', $entity, $field_name);
+  $field_value = $field_name ? $field_name[0]['value'] : '';
+  return $field_value;
+}
