@@ -5,46 +5,53 @@
  * event_finder_api module
  */
 
-/*
- * Implements hook_node_load().
- */
-function event_finder_api_node_load($nodes, $types) {
-  foreach ($nodes as $node) {
-    //$node->custom_field = 'SOME SHITE';
-  }
-}
 
 /*
- * Implements hook_services_request_postprocess_alter().
+ * Implements hook_views_pre_render().
  */
-function event_finder_api_services_request_postprocess_alter($controller, $args, &$result) {
+function event_finder_api_views_pre_render(&$view) {
 
-  if (isset($result->nid)) {
-    switch ($result->type) {
-      case 'event':
+  $results = &$view->result;
+  foreach ($results as $key => $result) {
+    switch ($view->name == 'events') {
 
-        $event_description = _event_finder_api_get_node_field_value('field_event_description', $result);
-        $result->field_event_description = $event_description;
-
+      case 'events':
+        //Event type
+        if(isset($results[$key]->field_field_event_type[0]['raw']['tid'])) {
+          $event_type_tid = $results[$key]->field_field_event_type[0]['raw']['tid'];
+          $results[$key]->field_field_event_type[0]['raw'] =  _event_finder_api_get_event_type_data($event_type_tid);
+        }   
+        // Event Location
+        if(isset($results[$key]->field_field_location_reference[0]['raw']['target_id'])) {
+          $event_location_nid = $results[$key]->field_field_location_reference[0]['raw']['target_id'];
+          $results[$key]->field_field_location_reference[0]['raw'] =  _event_finder_api_get_event_location_data($event_location_nid);
+        }   
+        
         break;
 
-      case 'location':
-      
-        $location_description = _event_finder_api_get_node_field_value('field_location_description', $result);
-        $result->field_location_description = $location_description;
-       
-        break;
     }
   }
 }
 
-
+/*
+ * Returns a node id and title.
+ */ 
+function _event_finder_api_get_event_location_data($nid) {  
+  if($nid) {
+    $node = node_load($nid);
+    $field = array('title' => $node->title, 'nid' => $node->nid);
+  }
+  return $field;
+}
 
 /*
- * Helper function that returns field value.
- */
-function _event_finder_api_get_node_field_value($field_name, $entity) {
-  $field_name = field_get_items('node', $entity, $field_name);
-  $field_value = $field_name ? $field_name[0]['value'] : '';
-  return $field_value;
+ * Returns term name and term
+ */ 
+function _event_finder_api_get_event_type_data($tid) {
+  $term = taxonomy_term_load($tid);
+  $term_name = $term->name;
+  $term_data = array('term_name' => $term_name , 'tid' => $tid);
+  return $term_data;
 }
+
+    

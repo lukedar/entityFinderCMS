@@ -53,3 +53,5 @@
  * @see conf_path()
  * @see http://drupal.org/documentation/install/multi-site
  */
+
+$sites['event-finder.dev'] = 'boilerplate';
