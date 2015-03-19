@@ -13,18 +13,29 @@ function event_finder_api_views_pre_render(&$view) {
 
   $results = &$view->result;
   foreach ($results as $key => $result) {
-    switch ($view->name == 'events') {
 
+
+
+    switch ($view->name) {
       case 'events':
         //Event type
         if(isset($results[$key]->field_field_event_type[0]['raw']['tid'])) {
           $event_type_tid = $results[$key]->field_field_event_type[0]['raw']['tid'];
-          $results[$key]->field_field_event_type[0]['raw'] =  _event_finder_api_get_event_type_data($event_type_tid);
+          $results[$key]->field_field_event_type[0]['raw'] =  _event_finder_api_get_term_data($event_type_tid);
         }   
         // Event Location
         if(isset($results[$key]->field_field_location_reference[0]['raw']['target_id'])) {
           $event_location_nid = $results[$key]->field_field_location_reference[0]['raw']['target_id'];
-          $results[$key]->field_field_location_reference[0]['raw'] =  _event_finder_api_get_event_location_data($event_location_nid);
+          $results[$key]->field_field_location_reference[0]['raw'] =  _event_finder_api_get_node_data($event_location_nid);
+        }
+
+        case 'locations': 
+        //Event type
+        if(isset($results[$key]->field_field_location_type[0]['raw']['tid'])) {
+          $location_type_tid = $results[$key]->field_field_location_type[0]['raw']['tid'];
+          $results[$key]->field_field_location_type[0]['raw'] =  _event_finder_api_get_term_data($location_type_tid);
+
+          dpm($results[$key]);
         }   
         
         break;
@@ -36,7 +47,7 @@ function event_finder_api_views_pre_render(&$view) {
 /*
  * Returns a node id and title.
  */ 
-function _event_finder_api_get_event_location_data($nid) {  
+function _event_finder_api_get_node_data($nid) {  
   if($nid) {
     $node = node_load($nid);
     $field = array('title' => $node->title, 'nid' => $node->nid);
@@ -47,10 +58,11 @@ function _event_finder_api_get_event_location_data($nid) {
 /*
  * Returns term name and term
  */ 
-function _event_finder_api_get_event_type_data($tid) {
+function _event_finder_api_get_term_data($tid) {
+
   $term = taxonomy_term_load($tid);
   $term_name = $term->name;
-  $term_data = array('term_name' => $term_name , 'tid' => $tid);
+  $term_data = array('name' => $term_name , 'tid' => $tid);
   return $term_data;
 }
 
