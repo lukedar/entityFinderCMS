@@ -12,37 +12,38 @@
 function event_finder_api_views_pre_render(&$view) {
 
   $results = &$view->result;
-  foreach ($results as $key => $result) {
 
+  if(is_array($results)) {
+   foreach ($results as $key => $result) {
+      switch ($view->name) {
+        case 'events':
+          //Event type
+          if(isset($result->field_field_event_type[0]['raw']['tid'])) {
+            $event_type_tid = $result->field_field_event_type[0]['raw']['tid'];
+            $result->field_field_event_type[0]['raw'] =  _event_finder_api_get_term_data($event_type_tid);
+          }   
+          // Event Location
+          if(isset($result->field_field_location_reference[0]['raw']['target_id'])) {
+            $event_location_nid = $result->field_field_location_reference[0]['raw']['target_id'];
+            $result->field_field_location_reference[0]['raw'] =  _event_finder_api_get_node_data($event_location_nid);
+          }
 
+          break;
 
-    switch ($view->name) {
-      case 'events':
-        //Event type
-        if(isset($results[$key]->field_field_event_type[0]['raw']['tid'])) {
-          $event_type_tid = $results[$key]->field_field_event_type[0]['raw']['tid'];
-          $results[$key]->field_field_event_type[0]['raw'] =  _event_finder_api_get_term_data($event_type_tid);
-        }   
-        // Event Location
-        if(isset($results[$key]->field_field_location_reference[0]['raw']['target_id'])) {
-          $event_location_nid = $results[$key]->field_field_location_reference[0]['raw']['target_id'];
-          $results[$key]->field_field_location_reference[0]['raw'] =  _event_finder_api_get_node_data($event_location_nid);
-        }
+          case 'locations': 
+          //Location type
+          if(isset($result->field_field_location_type[0]['raw']['tid'])) {
+            $location_type_tid = $result->field_field_location_type[0]['raw']['tid'];
+            $result->field_field_location_type[0]['raw'] =  _event_finder_api_get_term_data($location_type_tid);
+          }   
 
-        case 'locations': 
-        //Event type
-        if(isset($results[$key]->field_field_location_type[0]['raw']['tid'])) {
-          $location_type_tid = $results[$key]->field_field_location_type[0]['raw']['tid'];
-          $results[$key]->field_field_location_type[0]['raw'] =  _event_finder_api_get_term_data($location_type_tid);
+          break;
 
-          dpm($results[$key]);
-        }   
-        
-        break;
-
+      }
     }
   }
 }
+
 
 /*
  * Returns a node id and title.
@@ -59,7 +60,6 @@ function _event_finder_api_get_node_data($nid) {
  * Returns term name and term
  */ 
 function _event_finder_api_get_term_data($tid) {
-
   $term = taxonomy_term_load($tid);
   $term_name = $term->name;
   $term_data = array('name' => $term_name , 'tid' => $tid);
