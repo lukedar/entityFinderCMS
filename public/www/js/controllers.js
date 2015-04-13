@@ -89,8 +89,15 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 
 })
 
-.controller('LocationCtrl', function($scope, $stateParams, LocationsService) {
+.controller('LocationCtrl', function($scope, $stateParams, LocationsService, EventsByLocationService) {
+  
   LocationsService.query({ locationId: $stateParams.locationId}, function(result) {
     $scope.location = result[0];
   });
+
+
+  EventsByLocationService.query({ locationId: $stateParams.locationId}, function(result) {
+    $scope.events = result;
+  });
+
 });

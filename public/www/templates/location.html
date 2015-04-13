@@ -1,12 +1,27 @@
 <ion-view title="Location">
-    <ion-content class="has-header">
-        <div class="list card">
-            <div class="item item-divider">
-                <h2>{{location.node_title}}</h2>
-            </div>
-            <div class="item item-body">
-                <h3>{{location.description.value}}</h3>
-            </div>
-        </div>
-    </ion-content>
+  <ion-content class="has-header">
+    <div class="list card">
+      <div class="item">
+        <h2>{{location.node_title}}</h2>
+      </div>
+      <div class="item item-body">
+        <p>{{location.description.value}}</p>
+      </div>
+
+      <a ng-click="getUserLocation();" class="item item-icon-left assertive" href="#/app/locations/{{location.nid}}">
+        <i class="icon ion-pinpoint"></i>
+        Get directions
+      </a>
+    </div>
+
+    <div class="list list-inset">
+      <div class="item">
+        <h2>Upcoming Events</h2>
+      </div>
+      <a ng-repeat="event in events" class="item" href="#/app/events/{{event.nid}}">
+        <h3>{{event.node_title}}</h3>
+        <p>{{event.event_type.name}}</p>
+      </a>
+    </div>
+  </ion-content>
 </ion-view>
