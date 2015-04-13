@@ -39,13 +39,24 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     zoom : 12
   };
 
-  // $scope.map.markers = {
-  //     lat: 59.91,
-  //     lng: 10.75,
-  //     message: "I want to travel here!",
-  //     focus: true,
-  //     draggable: false
-  // };
+  $scope.map.markers = {
+      hello: {
+          lat: 51.505,
+          lng: -0.09,
+          focus: true,
+          draggable: false,
+          message: "trouble!",
+          icon: {}
+      },
+      trouble: {
+          lat: 52.505,
+          lng: -0.09,
+          focus: true,
+          draggable: false,
+          message: "Hi there!",
+          icon: {}
+      }
+  };
 
 
   console.log($scope.map.center);
