@@ -1,56 +1,61 @@
 angular.module('eventFinder.controllers', ['eventFinder.services'])
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
-  // Form data for the login modal
-  $scope.loginData = {};
-
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/login.html', {
-    scope: $scope
-  }).then(function(modal) {
-    $scope.modal = modal;
-  });
-  
-
-  // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
-    $scope.modal.hide();
-  };
-
-  // Open the login modal
-  $scope.login = function() {
-    $scope.modal.show();
-  };
-
-  // Perform the login action when the user submits the login form
-  $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
-
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
-  };
+  // Global controller
 })
 
-.controller('EventsCtrl', function($scope, Events) {
-    $scope.events = Events.query();
+.controller('EventsCtrl', function($scope, EventsService) {
+    $scope.events = EventsService.query();
 })
 
-.controller('EventCtrl', function($scope, $stateParams, Events) {
-  Events.query({ eventId: $stateParams.eventId}, function(result) {
+.controller('EventCtrl', function($scope, $stateParams, EventsService) {
+  EventsService.query({ eventId: $stateParams.eventId}, function(result) {
     $scope.event = result[0];
   });
 })
 
-.controller('LocationsCtrl', function($scope, $stateParams, Locations) {
-  $scope.locations = Locations.query();
+.controller('LocationsCtrl', function($scope, $stateParams,$cordovaGeolocation, LocationsService) {
+
+  $scope.map = {
+    defaults: {
+      tileLayer: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+      maxZoom: 18,
+      zoomControlPosition: 'bottomleft'
+    },
+    markers : {},
+    events: {
+      map: {
+        enable: ['context'],
+        logic: 'emit'
+      }
+    }
+  };
+
+  $scope.locations = LocationsService.query();
+
+  $scope.map.center  = {
+    lat: 51.538647,
+    lng: -0.016525,
+    zoom : 12
+  };
+
+  // $scope.map.markers = {
+  //     lat: 59.91,
+  //     lng: 10.75,
+  //     message: "I want to travel here!",
+  //     focus: true,
+  //     draggable: false
+  // };
+
+
+  console.log($scope.map.center);
+  console.log($scope.map.markers);
+  console.log($scope.map.defaults);
+
 })
 
-.controller('LocationCtrl', function($scope, $stateParams, Locations) {
-
-  Locations.query({ locationId: $stateParams.locationId}, function(result) {
+.controller('LocationCtrl', function($scope, $stateParams, LocationsService) {
+  LocationsService.query({ locationId: $stateParams.locationId}, function(result) {
     $scope.location = result[0];
   });
 });
