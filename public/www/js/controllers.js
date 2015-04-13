@@ -45,7 +45,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
         lat : parseFloat(item.location_marker.lat),
         focus: true, 
         draggable: false,
-        message: item.node_title + '<br><a class="button button-icon icon ion-ios-information-outline" href="#/app/locations/' + item.nid + '/detail"><a>',
+        message:'<h5>' + item.node_title + '</h5>' + '<a class="item-icon-right" href="#/app/locations/' + item.nid + '/detail"><br><i class="icon ion-ios-information-outline"></i></a>',
         lng : parseFloat(item.location_marker.lng), 
       };
 
@@ -60,6 +60,22 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     zoom : 12
   };
 
+
+  // $scope.map.dir = MQ.routing.directions();
+
+  // $scope.map.dir.route({
+  //     locations: [
+  //         '1600 pennsylvania ave, washington dc',
+  //         '935 pennsylvania ave, washington dc'
+  //     ]
+  // });
+ 
+  // $scope.map.addLayer(MQ.routing.routeLayer({
+  //     directions: dir,
+  //     fitBounds: true
+  // }));
+
+
   /**
   * Center map on user's current position
   */
@@ -71,6 +87,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
         $scope.map.center.lat  = position.coords.latitude;
         $scope.map.center.lng = position.coords.longitude;
         $scope.map.center.zoom = 15;
+
 
         $scope.map.markers.now = {
           lat:position.coords.latitude,
