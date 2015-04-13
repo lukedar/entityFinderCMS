@@ -54,7 +54,7 @@ var app = angular.module('eventFinder', ['ionic', 'leaflet-directive', 'ngCordov
       }
   })
 
-  .state('app.locations', {
+  .state('app.locations-all', {
     url: "/locations",
     views: {
       'menuContent': {
@@ -64,8 +64,18 @@ var app = angular.module('eventFinder', ['ionic', 'leaflet-directive', 'ngCordov
     }
   })
 
-  .state('app.location', {
+  .state('app.locations', {
     url: "/locations/:locationId",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/locations.html",
+        controller: 'LocationsCtrl'
+      }
+    }
+  })
+
+  .state('app.location', {
+    url: "/locations/:locationId/detail",
     views: {
       'menuContent': {
         templateUrl: "templates/location.html",

@@ -6,6 +6,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 
 .controller('EventsCtrl', function($scope, EventsService) {
     $scope.events = EventsService.query();
+     console.log($scope.events);
 })
 
 .controller('EventCtrl', function($scope, $stateParams, EventsService) {
@@ -35,20 +36,23 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     }
   };
 
-  // Build Marker
-  LocationsService.query(function(result) {
+  // Build Markers
+  LocationsService.query({locationId: $stateParams.locationId}, function(result) {
+
     angular.forEach(result, function(item, key) {
 
-      $scope.map.markers[key] = { 
+      $scope.map.markers[item.node_title] = { 
         lat : parseFloat(item.location_marker.lat),
         focus: true, 
         draggable: false,
-        message: item.node_title + '<a href="#/app/locations/' + item.nid + '">link here<a>',
+        message: item.node_title + '<br><a class="button button-icon icon ion-ios-information-outline" href="#/app/locations/' + item.nid + '/detail"><a>',
         lng : parseFloat(item.location_marker.lng), 
       };
+
+       console.log($scope.map.markers);
+
     });
   });
-
 
   $scope.map.center  = {
     lat: 51.538647,
@@ -56,12 +60,9 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     zoom : 12
   };
 
-
-  console.log($scope.map.markers);
-
   /**
- * Center map on user's current position
- */
+  * Center map on user's current position
+  */
   $scope.getUserLocation = function(){
 
     $cordovaGeolocation
@@ -84,13 +85,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
         console.log("Location error!");
         console.log(err);
       });
-
   };
-
-
-  console.log($scope.map.center);
-  console.log($scope.map.markers);
-  console.log($scope.map.defaults);
 
 })
 
