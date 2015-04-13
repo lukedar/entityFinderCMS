@@ -14,7 +14,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
   });
 })
 
-.controller('LocationsCtrl', function($scope, $stateParams,$cordovaGeolocation, LocationsService) {
+.controller('LocationsCtrl', function($scope, $stateParams, $cordovaGeolocation, LocationsService) {
 
   $scope.map = {
     defaults: {
@@ -31,7 +31,21 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     }
   };
 
-  $scope.locations = LocationsService.query();
+  LocationsService.query(function(result) {
+    angular.forEach(result, function(item, key) {
+
+      $scope.map.markers[key] = { 
+        lat : parseInt(item.location_marker.lat),
+        focus: true, 
+        draggable: false,
+        message: item.node_title,
+        lng : parseInt(item.location_marker.lng), 
+      };
+
+      console.log($scope.map.markers);
+    });
+  });
+
 
   $scope.map.center  = {
     lat: 51.538647,
@@ -56,6 +70,36 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
           message: "Hi there!",
           icon: {}
       }
+  };
+
+  console.log($scope.map.markers);
+
+  /**
+ * Center map on user's current position
+ */
+  $scope.getUserLocation = function(){
+
+    $cordovaGeolocation
+      .getCurrentPosition()
+      .then(function (position) {
+        $scope.map.center.lat  = position.coords.latitude;
+        $scope.map.center.lng = position.coords.longitude;
+        $scope.map.center.zoom = 15;
+
+        $scope.map.markers.now = {
+          lat:position.coords.latitude,
+          lng:position.coords.longitude,
+          message: "You Are Here",
+          focus: true,
+          draggable: false
+        };
+
+      }, function(err) {
+        // error
+        console.log("Location error!");
+        console.log(err);
+      });
+
   };
 
 
