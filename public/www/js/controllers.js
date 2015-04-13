@@ -17,10 +17,14 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 .controller('LocationsCtrl', function($scope, $stateParams, $cordovaGeolocation, LocationsService) {
 
   $scope.map = {
-    defaults: {
-      tileLayer: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      maxZoom: 18,
-      zoomControlPosition: 'bottomleft'
+    layers: {
+      baselayers: {
+        googleRoadmap: {
+          name: 'Google Streets',
+          layerType: 'ROADMAP',
+          type: 'google'
+        }
+      }
     },
     markers : {},
     events: {
@@ -31,18 +35,17 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     }
   };
 
+  // Build Marker
   LocationsService.query(function(result) {
     angular.forEach(result, function(item, key) {
 
       $scope.map.markers[key] = { 
-        lat : parseInt(item.location_marker.lat),
+        lat : parseFloat(item.location_marker.lat),
         focus: true, 
         draggable: false,
-        message: item.node_title,
-        lng : parseInt(item.location_marker.lng), 
+        message: item.node_title + '<a href="#/app/locations/' + item.nid + '">link here<a>',
+        lng : parseFloat(item.location_marker.lng), 
       };
-
-      console.log($scope.map.markers);
     });
   });
 
@@ -53,24 +56,6 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     zoom : 12
   };
 
-  $scope.map.markers = {
-      hello: {
-          lat: 51.505,
-          lng: -0.09,
-          focus: true,
-          draggable: false,
-          message: "trouble!",
-          icon: {}
-      },
-      trouble: {
-          lat: 52.505,
-          lng: -0.09,
-          focus: true,
-          draggable: false,
-          message: "Hi there!",
-          icon: {}
-      }
-  };
 
   console.log($scope.map.markers);
 
