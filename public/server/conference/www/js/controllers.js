@@ -1,4 +1,4 @@
-angular.module('starter.controllers', ['starter.services'])
+angular.module('eventFinder.controllers', ['eventFinder.services'])
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
   // Form data for the login modal
@@ -34,14 +34,23 @@ angular.module('starter.controllers', ['starter.services'])
   };
 })
 
-.controller('SessionsCtrl', function($scope, Session) {
-    $scope.sessions = Session.query();
+.controller('EventsCtrl', function($scope, Events) {
+    $scope.events = Events.query();
 })
 
-.controller('SessionCtrl', function($scope, $stateParams, Session) {
-
-  Session.query({ sessionId: $stateParams.sessionId}, function(result) {
-    $scope.session = result[0];
+.controller('EventCtrl', function($scope, $stateParams, Events) {
+  Events.query({ eventId: $stateParams.eventId}, function(result) {
+    $scope.event = result[0];
   });
+})
 
+.controller('LocationsCtrl', function($scope, $stateParams, Locations) {
+  $scope.locations = Locations.query();
+})
+
+.controller('LocationCtrl', function($scope, $stateParams, Locations) {
+
+  Locations.query({ locationId: $stateParams.locationId}, function(result) {
+    $scope.location = result[0];
+  });
 });

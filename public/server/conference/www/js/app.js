@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers'])
+angular.module('eventFinder', ['ionic', 'eventFinder.controllers'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -39,34 +39,47 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
-  .state('app.browse', {
-    url: "/browse",
+  .state('app.events', {
+    url: "/events",
     views: {
       'menuContent': {
-        templateUrl: "templates/browse.html"
+        templateUrl: "templates/events.html",
+        controller: 'EventsCtrl'
       }
     }
   })
 
-  .state('app.sessions', {
-    url: "/sessions",
-    views: {
-      'menuContent': {
-        templateUrl: "templates/sessions.html",
-        controller: 'SessionsCtrl'
-      }
-    }
-  })
-
-  .state('app.session', {
-      url: "/sessions/:sessionId",
+  .state('app.event', {
+      url: "/events/:eventId",
       views: {
         'menuContent': {
-          templateUrl: "templates/session.html",
-          controller: 'SessionCtrl'
+          templateUrl: "templates/event.html",
+          controller: 'EventCtrl'
         }
       }
-  });
+  })
+
+  .state('app.locations', {
+    url: "/locations",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/locations.html",
+        controller: 'LocationsCtrl'
+      }
+    }
+  })
+
+  .state('app.location', {
+    url: "/locations/:locationId",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/location.html",
+        controller: 'LocationCtrl'
+      }
+    }
+  })
+
+
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/sessions');
+  $urlRouterProvider.otherwise('/app/events');
 });
