@@ -1,5 +1,12 @@
 angular.module('eventFinder.controllers', ['eventFinder.services'])
 
+.run(function($rootScope) {
+    $rootScope.currentLocation =  {
+      lat: {},
+      lng: {} 
+    };
+})
+
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
   // Global controller
 })
@@ -33,10 +40,6 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
         enable: ['context'],
         logic: 'emit'
       }
-    },
-    currentLocation: {
-      lat: {},
-      lng: {}
     }
   };
 
@@ -65,7 +68,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 
     // Set current location
     if(parseInt($stateParams.locationId, 10)) {
-      $scope.map.currentLocation = result[0]['location_marker'];
+      $rootScope.currentLocation = result[0]['location_marker'];
     } 
 
   });
@@ -74,7 +77,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
   /**
   * Get directions based on Geolocation and current map location
   */
-  $scope.getDirections = function(){
+  $rootScope.getDirections = function(){
 
     // Get Geolocation
     $cordovaGeolocation
@@ -92,18 +95,17 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
           focus: true,
           draggable: false
         };
-  
 
         // Add Routing 
         leafletData.getMap().then(function(map) {
+
           L.Routing.control({
               waypoints: [
-                  L.latLng($scope.map.currentLocation.lat, $scope.map.currentLocation.lng),
-                  L.latLng(position.coords.latitude, position.coords.longitude)
+                  L.latLng(position.coords.latitude, position.coords.longitude),
+                  L.latLng($rootScope.currentLocation.lat, $rootScope.currentLocation.lng)
               ]
           }).addTo(map);
         });
-
 
       }, function(err) {
         // error
@@ -115,10 +117,11 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 
 })
 
-.controller('LocationCtrl', function($scope, $stateParams, LocationsService, EventsByLocationService) {
+.controller('LocationCtrl', function($scope, $rootScope, $stateParams, LocationsService, EventsByLocationService) {
   
   LocationsService.query({ locationId: $stateParams.locationId}, function(result) {
     $scope.location = result[0];
+    $rootScope.currentLocation = result[0]['location_marker'];
   });
 
 
