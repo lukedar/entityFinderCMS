@@ -83,11 +83,15 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     $cordovaGeolocation
       .getCurrentPosition()
       .then(function (position) {
-        $scope.map.center.lat  = position.coords.latitude;
-        $scope.map.center.lng = position.coords.longitude;
-        $scope.map.center.zoom = 15;
 
         // Center map on Geolocation point
+        $scope.map.center  = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          zoom : 15
+        };
+
+        // Add Geolocation Marker
         $scope.map.markers.now = {
           lat:position.coords.latitude,
           lng:position.coords.longitude,
@@ -98,7 +102,6 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 
         // Add Routing 
         leafletData.getMap().then(function(map) {
-
           L.Routing.control({
               waypoints: [
                   L.latLng(position.coords.latitude, position.coords.longitude),
