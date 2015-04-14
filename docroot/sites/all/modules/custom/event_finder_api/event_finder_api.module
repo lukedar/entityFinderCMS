@@ -62,7 +62,14 @@ function _event_finder_api_get_node_data($nid) {
 function _event_finder_api_get_term_data($tid) {
   $term = taxonomy_term_load($tid);
   $term_name = $term->name;
-  $term_data = array('name' => $term_name , 'tid' => $tid);
+
+  $term_iamge = field_get_items('taxonomy_term', $term, 'field_event_type_image');
+  if ($term_iamge){
+    $term_iamge = file_create_url($term_iamge[0]['uri']);
+  }
+
+  $term_data = array('tid' => $tid, 'name' => $term_name, 'image_url' => $term_iamge);
+  
   return $term_data;
 }
 
