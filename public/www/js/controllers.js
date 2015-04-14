@@ -60,22 +60,6 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     zoom : 12
   };
 
-
-  // $scope.map.dir = MQ.routing.directions();
-
-  // $scope.map.dir.route({
-  //     locations: [
-  //         '1600 pennsylvania ave, washington dc',
-  //         '935 pennsylvania ave, washington dc'
-  //     ]
-  // });
- 
-  // $scope.map.addLayer(MQ.routing.routeLayer({
-  //     directions: dir,
-  //     fitBounds: true
-  // }));
-
-
   /**
   * Center map on user's current position
   */
