@@ -1,7 +1,6 @@
-// Event Finder App
-var app = angular.module('eventFinder', ['ionic', 'leaflet-directive', 'ngCordova', 'eventFinder.controllers'])
+var app = angular.module('eventFinder', ['ionic', 'leaflet-directive', 'ngCordova', 'eventFinder.controllers']);
 
-.run(function($ionicPlatform) {
+app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -13,9 +12,10 @@ var app = angular.module('eventFinder', ['ionic', 'leaflet-directive', 'ngCordov
       StatusBar.styleDefault();
     }
   });
-})
+});
 
-.config(function($stateProvider, $urlRouterProvider) {
+app.config(function($stateProvider, $urlRouterProvider) {
+  
   $stateProvider
 
   .state('app', {
@@ -87,4 +87,7 @@ var app = angular.module('eventFinder', ['ionic', 'leaflet-directive', 'ngCordov
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/app/events');
+
 });
+
+

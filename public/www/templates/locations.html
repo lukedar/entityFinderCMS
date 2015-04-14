@@ -4,11 +4,11 @@
   </ion-nav-buttons>
 
   <ion-nav-buttons side="right">
-    <button ng-click="getUserLocation();" class="button button-icon icon ion-pinpoint"></button>
+    <button ng-click="getDirections();" class="button button-icon icon ion-pinpoint"></button>
   </ion-nav-buttons>
 
-    <ion-content data-tap-disabled="true">
-      <leaflet defaults="map.defaults" layers="map.layers" center="map.center" markers="map.markers" ng-if="map"></leaflet>
-    </ion-content>
+  <ion-content data-tap-disabled="true">
+    <leaflet defaults="map.defaults" layers="map.layers" center="map.center" markers="map.markers" ng-if="map"></leaflet>
+  </ion-content>
 
 </ion-view>

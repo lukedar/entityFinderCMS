@@ -8,7 +8,7 @@
         <p>{{location.description.value}}</p>
       </div>
 
-      <a ng-click="getUserLocation();" class="item item-icon-left assertive" href="#/app/locations/{{location.nid}}">
+      <a ng-click="getDirections({{location.nid}});" class="item item-icon-left assertive" href="#/app/locations/{{location.nid}}">
         <i class="icon ion-pinpoint"></i>
         Get directions
       </a>

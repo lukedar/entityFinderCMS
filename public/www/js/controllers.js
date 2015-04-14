@@ -15,7 +15,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
   });
 })
 
-.controller('LocationsCtrl', function($scope, $stateParams, $cordovaGeolocation, LocationsService) {
+.controller('LocationsCtrl', function($scope, $rootScope, $stateParams, $cordovaGeolocation, LocationsService, leafletData) {
 
   $scope.map = {
     layers: {
@@ -33,12 +33,24 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
         enable: ['context'],
         logic: 'emit'
       }
+    },
+    currentLocation: {
+      lat: {},
+      lng: {}
     }
   };
 
-  // Build Markers
+  // Add map centering
+  $scope.map.center  = {
+    lat: 51.545605,
+    lng: -0.012727,
+    zoom : 15
+  };
+
+  // Query Location Service
   LocationsService.query({locationId: $stateParams.locationId}, function(result) {
 
+    // Build markers
     angular.forEach(result, function(item, key) {
 
       $scope.map.markers[item.node_title] = { 
@@ -49,22 +61,22 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
         lng : parseFloat(item.location_marker.lng), 
       };
 
-       console.log($scope.map.markers);
-
     });
+
+    // Set current location
+    if(parseInt($stateParams.locationId, 10)) {
+      $scope.map.currentLocation = result[0]['location_marker'];
+    } 
+
   });
 
-  $scope.map.center  = {
-    lat: 51.538647,
-    lng: -0.016525,
-    zoom : 12
-  };
 
   /**
-  * Center map on user's current position
+  * Get directions based on Geolocation and current map location
   */
-  $scope.getUserLocation = function(){
+  $scope.getDirections = function(){
 
+    // Get Geolocation
     $cordovaGeolocation
       .getCurrentPosition()
       .then(function (position) {
@@ -72,7 +84,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
         $scope.map.center.lng = position.coords.longitude;
         $scope.map.center.zoom = 15;
 
-
+        // Center map on Geolocation point
         $scope.map.markers.now = {
           lat:position.coords.latitude,
           lng:position.coords.longitude,
@@ -80,6 +92,18 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
           focus: true,
           draggable: false
         };
+  
+
+        // Add Routing 
+        leafletData.getMap().then(function(map) {
+          L.Routing.control({
+              waypoints: [
+                  L.latLng($scope.map.currentLocation.lat, $scope.map.currentLocation.lng),
+                  L.latLng(position.coords.latitude, position.coords.longitude)
+              ]
+          }).addTo(map);
+        });
+
 
       }, function(err) {
         // error
@@ -87,6 +111,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
         console.log(err);
       });
   };
+
 
 })
 
