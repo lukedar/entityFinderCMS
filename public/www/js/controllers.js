@@ -24,6 +24,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 
 .controller('LocationsCtrl', function($scope, $rootScope, $stateParams, $cordovaGeolocation, LocationsService, leafletData) {
 
+  // Map init settings
   $scope.map = {
     layers: {
       baselayers: {
@@ -66,9 +67,19 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 
     });
 
-    // Set current location
+    // When on locations/ID
     if(parseInt($stateParams.locationId, 10)) {
+
+      // Set current location.
       $rootScope.currentLocation = result[0]['location_marker'];
+
+        // Add map centering
+        $scope.map.center  = {
+          lat: parseFloat(result[0]['location_marker']['lat']),
+          lng: parseFloat(result[0]['location_marker']['lng']),
+          zoom : 15
+        };
+
     } 
 
   });
@@ -103,10 +114,10 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
         // Add Routing 
         leafletData.getMap().then(function(map) {
           L.Routing.control({
-              waypoints: [
-                  L.latLng(position.coords.latitude, position.coords.longitude),
-                  L.latLng($rootScope.currentLocation.lat, $rootScope.currentLocation.lng)
-              ]
+            waypoints: [
+                L.latLng(position.coords.latitude, position.coords.longitude),
+                L.latLng($rootScope.currentLocation.lat, $rootScope.currentLocation.lng)
+            ]
           }).addTo(map);
         });
 

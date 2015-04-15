@@ -1,6 +1,6 @@
-var app = angular.module('eventFinder', ['ionic', 'leaflet-directive', 'ngCordova', 'eventFinder.controllers']);
+angular.module('eventFinder', ['ionic', 'leaflet-directive', 'ngCordova', 'eventFinder.controllers'])
 
-app.run(function($ionicPlatform) {
+.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -12,9 +12,9 @@ app.run(function($ionicPlatform) {
       StatusBar.styleDefault();
     }
   });
-});
+})
 
-app.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider) {
   
   $stateProvider
 
