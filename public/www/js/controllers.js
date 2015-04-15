@@ -44,7 +44,8 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     }
   };
 
-  // Add map centering
+  // Add map centering 
+  // To be set via config from cms.
   $scope.map.center  = {
     lat: 51.545605,
     lng: -0.012727,
