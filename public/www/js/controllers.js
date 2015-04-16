@@ -55,18 +55,6 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
   };
 })
 
-
-.controller('EventsCtrl', function($scope, EventsService) {
-    $scope.events = EventsService.query();
-})
-
-
-.controller('EventCtrl', function($scope, $stateParams, EventsService) {
-  EventsService.query({ eventId: $stateParams.eventId}, function(data) {
-    $scope.event = data[0];
-  });
-})
-
 .controller('LocationsCtrl', function($scope, $rootScope, $stateParams, $cordovaGeolocation, LocationsService, leafletData) {
 
   // Map init settings
@@ -148,9 +136,15 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 
   // Center Map
   $scope.centerMap = function(latitude, longitude) {
-    leafletData.getMap().then(function(map) {
-      map.panTo(new L.LatLng(latitude, longitude));
-    });
+    // leafletData.getMap().then(function(map) {
+    //   map.panTo(new L.LatLng(latitude, longitude));
+    // });
+
+    $scope.map.center  = {
+      lat: latitude,
+      lng: longitude,
+      zoom : 15
+    };
   }
 
 
@@ -225,5 +219,22 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
   EventsByLocationService.query({ locationId: $stateParams.locationId}, function(data) {
     $scope.events = data;
   });
+
+})
+
+.controller('EventsCtrl', function($scope, EventsService) {
+    $scope.events = EventsService.query();
+})
+
+.controller('EventCtrl', function($scope, $stateParams, EventsService) {
+  EventsService.query({ eventId: $stateParams.eventId}, function(data) {
+    $scope.event = data[0];
+  });
+})
+
+.controller('SearchCtrl', function($scope, LocationsService, EventsService) {
+  
+  $scope.events = EventsService.query();
+  $scope.locations = LocationsService.query();
 
 });
