@@ -60,20 +60,31 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     // When on locations/ID
     if(parseInt($stateParams.locationId, 10)) {
 
-      // Set current location.
-      $rootScope.currentLocation = data[0]['location_marker'];
-
-      console.log(data[0].node_title);
-
       $scope.centerMap(
+        parseFloat(data[0]['location_marker']['lat']), 
+        parseFloat(data[0]['location_marker']['lng'])
+        );
+
+      $scope.openMarkerPopup(        
         parseFloat(data[0]['location_marker']['lat']), 
         parseFloat(data[0]['location_marker']['lng']),
         data[0].node_title
         );
     } 
-
+    
   });
- 
+
+  // Open Marker Popup
+  $scope.openMarkerPopup = function(latitude, longitude, popUpMessage) {
+    $scope.map.markers.now = {
+      lat: latitude,
+      lng: longitude,
+      message: popUpMessage,
+      focus: true,
+      draggable: false
+    };
+  }
+   
   // Add marker(s) 
   $scope.addMarkers = function(data) {
 
@@ -89,17 +100,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
   }
 
   // Center Map
-  $scope.centerMap = function(latitude, longitude, markerTitle) {
-
-    if (markerTitle !== null) {
-      // Add Marker
-      $scope.map.markers.now = {
-        lat: latitude,
-        lng: longitude,
-        message: markerTitle,
-        focus: true,
-      };
-    }
+  $scope.centerMap = function(latitude, longitude) {
 
     $scope.map.center  = {
       lat: latitude,
