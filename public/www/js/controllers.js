@@ -110,7 +110,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 
       // Center map
       $scope.centerMap(parseFloat(data[0]['location_marker']['lat']), parseFloat(data[0]['location_marker']['lng']));
-      
+
       // Open Marker Popup
       $scope.openMarkerPopup(parseFloat(data[0]['location_marker']['lat']), parseFloat(data[0]['location_marker']['lng']), data[0].node_title);
     } 
@@ -133,11 +133,9 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 
   // Center Map
   $scope.centerMap = function(latitude, longitude) {
-    $scope.map.center  = {
-      lat: latitude,
-      lng: longitude,
-      zoom : 15
-    };
+    leafletData.getMap().then(function(map) {
+      map.panTo(new L.LatLng(latitude, longitude));
+    });
   }
 
   // Open Marker Popup
@@ -158,12 +156,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
       .getCurrentPosition()
       .then(function (position) {
 
-        // Add routing.
-        $scope.addRouting(
-          position.coords.latitude, position.coords.longitude,
-          $rootScope.currentLocation.lat, $rootScope.currentLocation.lng);
-
-        // Add Users Geolocation Marker
+         // Add Users Geolocation Marker
         $scope.map.markers.now = {
           lat:position.coords.latitude,
           lng:position.coords.longitude,
@@ -172,8 +165,11 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
           draggable: false
         };
 
-        // Center map on user Geolocation.
-        $scope.centerMap(position.coords.latitude, position.coords.longitude);
+        // Add routing.
+        $scope.addRouting(
+          position.coords.latitude, position.coords.longitude,
+          $rootScope.currentLocation.lat, $rootScope.currentLocation.lng);
+
 
       }, function(err) {
         // error
@@ -193,6 +189,9 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
             L.latLng(toLat, toLng)
         ]
       }).addTo(map);
+
+      // Pan to position.
+      $scope.centerMap(fromLat, fromLng);
     });
   }
 
