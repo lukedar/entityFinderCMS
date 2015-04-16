@@ -13,14 +13,15 @@
 
   <ion-content class="has-header">
     <div class="list">
-      <div class="item item-divider">Events</div>
-      <a ng-repeat="event in events | filter:filter" class="item" href="#/app/events/{{event.nid}}">
-        <h2>{{event.node_title}}</h2>
-      </a>  
       <div class="item item-divider">Locations</div>
       <a ng-repeat="location in locations | filter:filter" class="item" href="#/app/locations/{{location.nid}}">
         <h2>{{location.node_title}}</h2>
       </a>
+      <div class="item item-divider">Events</div>
+      <a ng-repeat="event in events | filter:filter" class="item" href="#/app/events/{{event.nid}}">
+        <h2>{{event.node_title}}</h2>
+        <!-- <p>{{event.event_type.name}}</p> -->
+      </a>  
     </div>
   </ion-content>
 

@@ -1,6 +1,6 @@
 angular.module('eventFinder.controllers', ['eventFinder.services'])
 
-.run(function($ionicPlatform, $rootScope) {
+.run(function($ionicPlatform, $rootScope, $window) {
 
   $rootScope.currentLocation =  {
     lat: {},
@@ -21,38 +21,29 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 })
 
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $localstorage, $rootScope) {
 
-  // Form data for the login modal
-  $scope.loginData = {};
+  $rootScope.myEvents = $localstorage.getObject('events') || [];
+
+  console.log($rootScope.myEvents);
 
   // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/login.html', {
+  $ionicModal.fromTemplateUrl('templates/myEvents.html', {
     scope: $scope
   }).then(function(modal) {
     $scope.modal = modal;
   });
   
   // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
+  $scope.closeMyEvents = function() {
     $scope.modal.hide();
   };
 
   // Open the login modal
-  $scope.login = function() {
+  $scope.showMyEvents = function() {
     $scope.modal.show();
   };
 
-  // Perform the login action
-  $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
-
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
-  };
 })
 
 .controller('LocationsCtrl', function($scope, $rootScope, $stateParams, $cordovaGeolocation, LocationsService, leafletData) {
@@ -210,7 +201,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 })
 
 .controller('LocationCtrl', function($scope, $rootScope, $stateParams, LocationsService, EventsByLocationService) {
-  
+
   LocationsService.query({ locationId: $stateParams.locationId}, function(data) {
     $scope.location = data[0];
     $rootScope.currentLocation = data[0]['location_marker'];
@@ -223,18 +214,33 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 })
 
 .controller('EventsCtrl', function($scope, EventsService) {
-    $scope.events = EventsService.query();
+  $scope.events = EventsService.query();
+
 })
 
-.controller('EventCtrl', function($scope, $stateParams, EventsService) {
+.controller('EventCtrl', function($scope, $stateParams, $localstorage, EventsService) {
   EventsService.query({ eventId: $stateParams.eventId}, function(data) {
     $scope.event = data[0];
   });
+
+  $scope.addToMyEvents = function(eventId, eventTitle) {
+
+    var savedEvents = $localstorage.getObject('events') || [];
+
+    var newEvent = {
+        'event_id': eventId,
+        'event_title': eventTitle,
+    };
+
+    savedEvents.push(newEvent);
+
+    $localstorage.setObject('events', newEvent);
+
+  }
+
 })
 
 .controller('SearchCtrl', function($scope, LocationsService, EventsService) {
-  
   $scope.events = EventsService.query();
   $scope.locations = LocationsService.query();
-
 });

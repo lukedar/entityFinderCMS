@@ -1,4 +1,4 @@
-angular.module('eventFinder', ['ionic', 'leaflet-directive', 'ngCordova', 'eventFinder.controllers'])
+angular.module('eventFinder', ['ionic', 'leaflet-directive', 'ngCordova', 'eventFinder.controllers', 'ionic.utils'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {

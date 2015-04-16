@@ -10,7 +10,7 @@
         <p>{{event.event_description.value}}</p>
       </div>
       <div class="item tabs tabs-secondary tabs-icon-left">
-        <a class="tab-item" href="#">
+        <a class="tab-item" ng-click="addToMyEvents(event.nid, event.node_title)" href="#">
           <i class="icon ion-ios-plus-outline"></i>
           My Events
         </a>

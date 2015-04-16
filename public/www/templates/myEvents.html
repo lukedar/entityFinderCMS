@@ -1,0 +1,19 @@
+<ion-modal-view>
+  <ion-header-bar>
+    <button class="button button-small button-assertive" ng-click="deleteMyEvents()">
+      Clear List
+    </button>
+    <h1 class="title">My Events</h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="closeMyEvents()">Close</button>
+    </div>
+  </ion-header-bar>
+  <ion-content class="has-header">
+    <div class="list">
+      <a ng-repeat="event in myEvents" class="item" href="#/app/events/{{event.event_id}}" ng-click="closeMyEvents()">
+        <h3>{{event.event_title}}</h3>
+      </a>  
+    </div>
+    <br>
+  </ion-content>
+</ion-modal-view>
