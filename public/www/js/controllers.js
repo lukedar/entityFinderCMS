@@ -126,17 +126,10 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 
       $scope.map.markers[item.node_title] = { 
         lat : parseFloat(item.location_marker.lat),
-        message:'<h5>' + item.node_title + '</h5>' + '<a class="item-icon-right" href="#/app/locations/' + item.nid + '/detail"><br><i class="icon ion-ios-information-outline"></i></a>',
+        message: $scope.setMarkerPopupMessage(item.node_title, item.nid),
         lng : parseFloat(item.location_marker.lng), 
       };
 
-    });
-  }
-
-  // Center Map
-  $scope.centerMap = function(latitude, longitude) {
-    leafletData.getMap().then(function(map) {
-      map.panTo(new L.LatLng(latitude, longitude));
     });
   }
 
@@ -146,11 +139,33 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     $scope.map.markers.now = {
       lat: latitude,
       lng: longitude,
-      message:'<h5>' +  data[0].node_title + '</h5>' + '<a class="item-icon-right" href="#/app/locations/' +  data[0].nid + '/detail"><br><i class="icon ion-ios-information-outline"></i></a>',
+      message: $scope.setMarkerPopupMessage( data[0].node_title, data[0].nid),
       focus: true,
       draggable: false
     };
   }
+
+
+  // Center Map
+  $scope.centerMap = function(latitude, longitude) {
+    leafletData.getMap().then(function(map) {
+      map.panTo(new L.LatLng(latitude, longitude));
+    });
+  }
+
+
+  // Sets Marker Popup Markup
+  $scope.setMarkerPopupMessage = function(title, locatationId) {
+
+    var markup = '';
+
+    markup += '<h5>' +  title + '</h5>';
+    markup += '<a class="item-icon-right" href="#/app/locations/' + locatationId + '/detail"><br><i class="icon ion-ios-information-outline"></i></a>';
+   
+    return markup;
+
+  }
+
 
   $rootScope.getDirections = function(){
 
