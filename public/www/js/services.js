@@ -13,6 +13,7 @@ angular.module('eventFinder.services', ['ngResource'])
   return $resource('http://event-finder.dev/api/v1/events?location=:locationId');
 });
 
+
 angular.module('ionic.utils', [])
 
 .factory('$localstorage', ['$window', function($window) {
@@ -31,3 +32,4 @@ angular.module('ionic.utils', [])
     }
   }
 }]);
+

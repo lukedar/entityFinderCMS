@@ -21,11 +21,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 })
 
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $localstorage, $rootScope) {
-
-  $rootScope.myEvents = $localstorage.getObject('events') || [];
-
-  console.log($rootScope.myEvents);
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $localstorage, $rootScope, $window) {
 
   // Create the login modal that we will use later
   $ionicModal.fromTemplateUrl('templates/myEvents.html', {
@@ -43,6 +39,16 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
   $scope.showMyEvents = function() {
     $scope.modal.show();
   };
+
+
+  $rootScope.myEvents = $localstorage.getObject('events') || [];
+
+  console.log($rootScope.myEvents);
+
+  $scope.deleteMyEvents = function() {
+    $rootScope.myEvents = [];
+    $window.localStorage.clear();
+  }
 
 })
 
@@ -218,23 +224,26 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 
 })
 
-.controller('EventCtrl', function($scope, $stateParams, $localstorage, EventsService) {
+.controller('EventCtrl', function($scope, $stateParams, $localstorage, $rootScope, EventsService) {
   EventsService.query({ eventId: $stateParams.eventId}, function(data) {
     $scope.event = data[0];
   });
 
   $scope.addToMyEvents = function(eventId, eventTitle) {
 
-    var savedEvents = $localstorage.getObject('events') || [];
+    var savedEvents = JSON.parse(localStorage.getItem('events')) || [];
 
     var newEvent = {
-        'event_id': eventId,
-        'event_title': eventTitle,
+      'event_id': eventId,
+      'event_title': eventTitle
     };
 
     savedEvents.push(newEvent);
 
-    $localstorage.setObject('events', newEvent);
+    localStorage.setItem('events', JSON.stringify(savedEvents));
+
+    $rootScope.myEvents = savedEvents;
+
 
   }
 
