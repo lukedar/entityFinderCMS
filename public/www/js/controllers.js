@@ -20,6 +20,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
   });
 })
 
+
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
   // Form data for the login modal
@@ -54,10 +55,11 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
   };
 })
 
+
 .controller('EventsCtrl', function($scope, EventsService) {
     $scope.events = EventsService.query();
-     console.log($scope.events);
 })
+
 
 .controller('EventCtrl', function($scope, $stateParams, EventsService) {
   EventsService.query({ eventId: $stateParams.eventId}, function(data) {
@@ -112,7 +114,7 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
       $scope.centerMap(parseFloat(data[0]['location_marker']['lat']), parseFloat(data[0]['location_marker']['lng']));
 
       // Open Marker Popup
-      $scope.openMarkerPopup(parseFloat(data[0]['location_marker']['lat']), parseFloat(data[0]['location_marker']['lng']), data[0].node_title);
+      $scope.openMarkerPopup(parseFloat(data[0]['location_marker']['lat']), parseFloat(data[0]['location_marker']['lng']), data);
     } 
 
   });
@@ -139,11 +141,12 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
   }
 
   // Open Marker Popup
-  $scope.openMarkerPopup = function(latitude, longitude, popUpMessage) {
+  $scope.openMarkerPopup = function(latitude, longitude, data) {
+
     $scope.map.markers.now = {
       lat: latitude,
       lng: longitude,
-      message: popUpMessage,
+      message:'<h5>' +  data[0].node_title + '</h5>' + '<a class="item-icon-right" href="#/app/locations/' +  data[0].nid + '/detail"><br><i class="icon ion-ios-information-outline"></i></a>',
       focus: true,
       draggable: false
     };
@@ -203,7 +206,6 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     $scope.location = data[0];
     $rootScope.currentLocation = data[0]['location_marker'];
   });
-
 
   EventsByLocationService.query({ locationId: $stateParams.locationId}, function(data) {
     $scope.events = data;
