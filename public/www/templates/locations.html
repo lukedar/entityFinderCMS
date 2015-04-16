@@ -17,7 +17,7 @@
     <leaflet defaults="map.defaults" layers="map.layers" center="map.center" markers="map.markers" ng-if="map"></leaflet>
   </ion-content>
 
-  <ion-footer-bar align-title="left" class="bar">
+  <ion-footer-bar align-title="left" class="bar loaction" ng-if="showLocationsFooter == true">
     <div class="buttons">
       <button ng-click="getDirections();" class="button button-icon icon ion-ios-navigate-outline"> Get Directions </button>
     </div>

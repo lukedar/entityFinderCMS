@@ -1,14 +1,57 @@
 angular.module('eventFinder.controllers', ['eventFinder.services'])
 
-.run(function($rootScope) {
-    $rootScope.currentLocation =  {
-      lat: {},
-      lng: {} 
-    };
+.run(function($ionicPlatform, $rootScope) {
+
+  $rootScope.currentLocation =  {
+    lat: {},
+    lng: {} 
+  };
+
+  $ionicPlatform.ready(function() {
+    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+    // for form inputs)
+    if (window.cordova && window.cordova.plugins.Keyboard) {
+      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+    }
+    if (window.StatusBar) {
+      // org.apache.cordova.statusbar required
+      StatusBar.styleDefault();
+    }
+  });
 })
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
-  // Global controller
+
+  // Form data for the login modal
+  $scope.loginData = {};
+
+  // Create the login modal that we will use later
+  $ionicModal.fromTemplateUrl('templates/login.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modal = modal;
+  });
+  
+  // Triggered in the login modal to close it
+  $scope.closeLogin = function() {
+    $scope.modal.hide();
+  };
+
+  // Open the login modal
+  $scope.login = function() {
+    $scope.modal.show();
+  };
+
+  // Perform the login action
+  $scope.doLogin = function() {
+    console.log('Doing login', $scope.loginData);
+
+    // Simulate a login delay. Remove this and replace with your login
+    // code if using a login system
+    $timeout(function() {
+      $scope.closeLogin();
+    }, 1000);
+  };
 })
 
 .controller('EventsCtrl', function($scope, EventsService) {
@@ -55,17 +98,21 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
   // Query Location Service
   LocationsService.query({locationId: $stateParams.locationId}, function(data) {
 
+    // Add markers
     $scope.addMarkers(data);
-    
+
     // When on locations/ID
     if(parseInt($stateParams.locationId, 10)) {
+      $scope.showLocationsFooter = true;
 
-      $scope.centerMap(parseFloat(data[0]['location_marker']['lat']), 
-        parseFloat(data[0]['location_marker']['lng']));
+      // Set current location, used for routing.
+      $rootScope.currentLocation = data[0]['location_marker'];
 
-      $scope.openMarkerPopup(parseFloat(data[0]['location_marker']['lat']), 
-        parseFloat(data[0]['location_marker']['lng']), 
-        data[0].node_title);
+      // Center map
+      $scope.centerMap(parseFloat(data[0]['location_marker']['lat']), parseFloat(data[0]['location_marker']['lng']));
+      
+      // Open Marker Popup
+      $scope.openMarkerPopup(parseFloat(data[0]['location_marker']['lat']), parseFloat(data[0]['location_marker']['lng']), data[0].node_title);
     } 
 
   });
@@ -111,7 +158,12 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
       .getCurrentPosition()
       .then(function (position) {
 
-        // Add Geolocation Marker
+        // Add routing.
+        $scope.addRouting(
+          position.coords.latitude, position.coords.longitude,
+          $rootScope.currentLocation.lat, $rootScope.currentLocation.lng);
+
+        // Add Users Geolocation Marker
         $scope.map.markers.now = {
           lat:position.coords.latitude,
           lng:position.coords.longitude,
@@ -120,13 +172,8 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
           draggable: false
         };
 
-        // Add routing.
-        $scope.addRouting(
-          position.coords.latitude, position.coords.longitude,
-          $rootScope.currentLocation.lat, $rootScope.currentLocation.lng);
-
         // Center map on user Geolocation.
-        $scope.centerMap(position.coords.latitude, position.coords.longitude, null);
+        $scope.centerMap(position.coords.latitude, position.coords.longitude);
 
       }, function(err) {
         // error
@@ -135,8 +182,9 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
       });
   };
 
-  // Add Routing 
+  // Add Routing
   $scope.addRouting = function (fromLat, fromLng, toLat, toLng) {
+
     // Get map and add routing.
     leafletData.getMap().then(function(map) {
       L.Routing.control({
