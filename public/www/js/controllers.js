@@ -30,20 +30,16 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     $scope.modal = modal;
   });
   
-  // Triggered in the login modal to close it
-  $scope.closeMyEvents = function() {
-    $scope.modal.hide();
-  };
-
-  // Open the login modal
+  // My Events
+  $rootScope.myEvents = $localstorage.getObject('events') || [];
+  
   $scope.showMyEvents = function() {
     $scope.modal.show();
   };
 
-
-  $rootScope.myEvents = $localstorage.getObject('events') || [];
-
-  console.log($rootScope.myEvents);
+  $scope.closeMyEvents = function() {
+    $scope.modal.hide();
+  };
 
   $scope.deleteMyEvents = function() {
     $rootScope.myEvents = [];
