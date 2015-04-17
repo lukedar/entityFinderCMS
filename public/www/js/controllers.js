@@ -129,9 +129,6 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
 
   // Center Map
   $scope.centerMap = function(latitude, longitude) {
-    // leafletData.getMap().then(function(map) {
-    //   map.panTo(new L.LatLng(latitude, longitude));
-    // });
 
     $scope.map.center  = {
       lat: latitude,
@@ -186,8 +183,15 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
   // Add Routing
   $scope.addRouting = function (fromLat, fromLng, toLat, toLng) {
 
+    // $scope.map.center  = {lat: null,lng: null, zoom : null};
+
     // Get map and add routing.
     leafletData.getMap().then(function(map) {
+    
+      map.fitBounds([[fromLat, fromLng], [toLat, toLng]]);
+
+      L.Routing.control.getPlan().setWaypoints([]);
+
       L.Routing.control({
         waypoints: [
             L.latLng(fromLat, fromLng),
@@ -195,10 +199,11 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
         ]
       }).addTo(map);
 
-      // Pan to position.
-      $scope.centerMap(fromLat, fromLng);
+      // map.panTo(new L.LatLng(fromLat, fromLng));
+
     });
   }
+
 
 })
 
@@ -239,7 +244,6 @@ angular.module('eventFinder.controllers', ['eventFinder.services'])
     localStorage.setItem('events', JSON.stringify(savedEvents));
 
     $rootScope.myEvents = savedEvents;
-
 
   }
 
