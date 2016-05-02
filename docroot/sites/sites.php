@@ -54,4 +54,4 @@
  * @see http://drupal.org/documentation/install/multi-site
  */
 
-$sites['event-finder.dev'] = 'boilerplate';
+$sites['entity-cms.local'] = 'boilerplate';

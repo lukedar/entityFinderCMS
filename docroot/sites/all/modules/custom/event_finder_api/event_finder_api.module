@@ -16,7 +16,7 @@ function event_finder_api_views_pre_render(&$view) {
   if(is_array($results)) {
    foreach ($results as $key => $result) {
       switch ($view->name) {
-        case 'events':
+        case 'entities':
           //Event type
           if(isset($result->field_field_event_type[0]['raw']['tid'])) {
             $event_type_tid = $result->field_field_event_type[0]['raw']['tid'];
