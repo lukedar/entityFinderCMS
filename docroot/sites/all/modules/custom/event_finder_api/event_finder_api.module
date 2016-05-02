@@ -68,7 +68,7 @@ function _event_finder_api_get_term_data($tid) {
     $term_iamge = file_create_url($term_iamge[0]['uri']);
   }
 
-  $term_data = array('tid' => $tid, 'name' => $term_name, 'image_url' => $term_iamge);
+  $term_data = array('tid' => $tid, 'name' => $term_name, 'imageUrl' => $term_iamge);
   
   return $term_data;
 }
