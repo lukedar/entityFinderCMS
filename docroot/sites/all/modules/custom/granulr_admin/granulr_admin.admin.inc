@@ -48,26 +48,25 @@ function granulr_form_form_submit($form, &$form_state) {
   $layout_setting_prefix = 'layout';
   
   $app_settings_output = array(
-    'settings' => array(
-      'theme' => array(
-        'brand' => array(),
-        'layout' => array()
-        ),
+    'theme' => array(
+      'brand' => array(),
+      'layout' => array()
       ),
     );
 
+  // Extract app settings from form state and build $app_settings_output.
   foreach($app_settings as $key => $app_setting) {
     // Set branding endpoint settings.
     if (strpos($key, $brand_setting_prefix) !== false) {
-      $app_settings_output['settings']['theme']['brand'][$key] = $app_setting;
+      $app_settings_output['theme']['brand'][$key] = '#' . $app_setting;
     }
 
     // Set layout endpoiint setting.
     if (strpos($key, $layout_setting_prefix) !== false) { 
-      $app_settings_output['settings']['theme']['layout'][$key] = $app_setting;
+      $app_settings_output['theme']['layout'][$key] = $app_setting;
     }
 
   }
 
-  dpm(drupal_json_encode($app_settings_output));
+  variable_set('granulr_app_settings', $app_settings_output);
 }
