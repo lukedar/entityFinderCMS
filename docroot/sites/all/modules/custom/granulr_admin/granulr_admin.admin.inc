@@ -25,8 +25,12 @@ function granulr_admin_form($form, &$form_state) {
 
 
   $form['granulr']['layoutEntityListings'] = array(
-    '#type' => 'text',
-    '#title' => t('Layout settings'),
+    '#type' => 'select',
+    '#title' => t('Listings Layout'),
+    '#options' => array(
+      'list' => t('List'),
+      'grid' => t('Grid'),
+    ),
     '#description' => t('Sets the entity listings layout style.'),
     '#default_value' => variable_get('layoutEntityListings', ''),
   );
@@ -55,14 +59,11 @@ function granulr_form_form_submit($form, &$form_state) {
   foreach($app_settings as $key => $app_setting) {
     // Set branding endpoint settings.
     if (strpos($key, $brand_setting_prefix) !== false) {
-      dpm('yes');
       $app_settings_output['settings']['theme']['brand'][$key] = $app_setting;
     }
 
     // Set layout endpoiint setting.
-    if (strpos($key, $layout_setting_prefix) !== false) {
-
-      dpm('yes');
+    if (strpos($key, $layout_setting_prefix) !== false) { 
       $app_settings_output['settings']['theme']['layout'][$key] = $app_setting;
     }
 
