@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function granulr_admin_menu() {
+  $items['admin/config/granulr'] = array(
+    'title' => 'Granulr configuration',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('granulr_admin_form'),
+    'access arguments' => array('modify granulr settings'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'granulr_admin.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function granulr_admin_permission() {
+  return array(
+    'modify granulr settingss' => array(
+      'title' => t('Modify Granulr settings'),
+      'description' => t('view, set or change granulr site settings'),
+    ),
+  );
+}
+
+

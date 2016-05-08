@@ -1,0 +1,4 @@
+name = Granulr admin form
+description = A module which provides settings for Granular.
+package = Granulr
+core = 7.x
