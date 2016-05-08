@@ -12,6 +12,8 @@ function granulr_admin_form($form, &$form_state) {
   $form['granulr']['brand'] = array(
     '#type' => 'fieldset',
     '#title' => t('Branding'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,  
   );
 
   $form['granulr']['brand']['titleBarTextColor'] = array(
@@ -31,6 +33,8 @@ function granulr_admin_form($form, &$form_state) {
   $form['granulr']['layout'] = array(
     '#type' => 'fieldset',
     '#title' => t('Layout'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,  
   );
 
   $form['granulr']['layout']['entityListingsLayoutType'] = array(
@@ -42,6 +46,35 @@ function granulr_admin_form($form, &$form_state) {
     ),
     '#description' => t('Sets the entity listings layout style.'),
     '#default_value' => variable_get('entityListingsLayoutType', ''),
+  );
+
+
+  $form['granulr']['features'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Features'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,  
+  );
+
+  $form['granulr']['features']['socialFeature'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Social Sharing'),
+    '#description' => t('Enable social sharing'),
+    '#default_value' => variable_get('socialFeature', ''),
+  );
+
+  $form['granulr']['features']['mapDirections'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Map Directions'),
+    '#description' => t('Enables the map directions or user routing.'),
+    '#default_value' => variable_get('mapDirections', ''),
+  );
+
+  $form['granulr']['features']['myListings'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Map Directions'),
+    '#description' => t('Allows users to bookmark entities and create a my listings section.'),
+    '#default_value' => variable_get('myListings', ''),
   );
 
   // Ensure we post process image uploads.
@@ -57,6 +90,7 @@ function granulr_form_form_submit($form, &$form_state) {
   $app_settings = $form_state['complete form']['granulr'];
   $brand_settings = $app_settings['brand'];
   $layout_settings = $app_settings['layout'];
+  $feature_settings = $app_settings['features'];
   
   // Setup config enpoint output..
   $app_settings_output = array(
@@ -66,6 +100,7 @@ function granulr_form_form_submit($form, &$form_state) {
         'entityListings' => ''
         )
       ),
+    'features' => array(),
     );
 
   // Extract app branding settings form state.
@@ -85,6 +120,16 @@ function granulr_form_form_submit($form, &$form_state) {
       $layout_setting['#value'] !== null) {
       
       $app_settings_output['theme']['layout']['entityListings'] = $layout_setting['#value'];
+    }
+  }
+
+  // Extract toggable features.
+  foreach($feature_settings as $key => $feature_setting) {
+    if (isset($feature_setting['#input']) && 
+      $feature_setting['#input'] === TRUE && 
+      $feature_setting['#value'] !== null) {
+      
+      $app_settings_output['features'][$key] = $feature_setting['#value'];
     }
   }
 
