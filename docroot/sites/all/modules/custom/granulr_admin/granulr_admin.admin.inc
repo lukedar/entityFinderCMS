@@ -9,16 +9,23 @@ function granulr_admin_form($form, &$form_state) {
 
   dpm('admin form settintgs');
 
-  $form['app'] = array(
+  $form['granulr'] = array(
     '#type' => 'fieldset',
     '#title' => t('Granular App Settings'),
   );
 
-  $form['app']['titleBarColor'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Title bar color'),
-    '#description' => t('set the hex for the app title bar color.'),
-    '#default_value' => variable_get('granulr_title_bar_color', ''),
+  $form['granulr']['titleBarTextColor'] = array(
+    '#type' => 'jquery_colorpicker',
+    '#title' => t('Title bar text color'),
+    '#description' => t('Set the hex for the app title bar color.'),
+    '#default_value' => variable_get('titleBarTextColor', ''),
+  );
+
+  $form['granulr']['titleBarBackgroundColor'] = array(
+    '#type' => 'jquery_colorpicker',
+    '#title' => t('Title bar barckground color'),
+    '#description' => t('Set the hex for the app title bar background color.'),
+    '#default_value' => variable_get('titleBarBackgroundColor', ''),
   );
 
   // Ensure we post process image uploads.
