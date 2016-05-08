@@ -50,12 +50,15 @@ function granulr_admin_form($form, &$form_state) {
   return system_settings_form($form);
 }
 
-
+/**
+ * Get app setting values and save to granulr_app_settings var.
+ */
 function granulr_form_form_submit($form, &$form_state) {
   $app_settings = $form_state['complete form']['granulr'];
   $brand_settings = $app_settings['brand'];
   $layout_settings = $app_settings['layout'];
   
+  // Setup config enpoint output..
   $app_settings_output = array(
     'theme' => array(
       'brand' => array(),
