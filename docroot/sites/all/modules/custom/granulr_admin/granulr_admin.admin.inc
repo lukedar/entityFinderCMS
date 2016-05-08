@@ -1,31 +1,34 @@
 <?php
 
-dpm('hitting admin form');
-
 /**
  * Implements hook_form().
  */
 function granulr_admin_form($form, &$form_state) {
-
-  dpm('admin form settintgs');
-
   $form['granulr'] = array(
     '#type' => 'fieldset',
     '#title' => t('Granular App Settings'),
   );
 
-  $form['granulr']['titleBarTextColor'] = array(
+  $form['granulr']['brandTitleBarTextColor'] = array(
     '#type' => 'jquery_colorpicker',
     '#title' => t('Title bar text color'),
     '#description' => t('Set the hex for the app title bar color.'),
     '#default_value' => variable_get('titleBarTextColor', ''),
   );
 
-  $form['granulr']['titleBarBackgroundColor'] = array(
+  $form['granulr']['brandTitleBarBackgroundColor'] = array(
     '#type' => 'jquery_colorpicker',
     '#title' => t('Title bar barckground color'),
     '#description' => t('Set the hex for the app title bar background color.'),
     '#default_value' => variable_get('titleBarBackgroundColor', ''),
+  );
+
+
+  $form['granulr']['layoutEntityListings'] = array(
+    '#type' => 'text',
+    '#title' => t('Layout settings'),
+    '#description' => t('Sets the entity listings layout style.'),
+    '#default_value' => variable_get('layoutEntityListings', ''),
   );
 
   // Ensure we post process image uploads.
@@ -36,6 +39,34 @@ function granulr_admin_form($form, &$form_state) {
 
 
 function granulr_form_form_submit($form, &$form_state) {
+  $app_settings = $form_state['values'];
+  $brand_setting_prefix = 'brand';
+  $layout_setting_prefix = 'layout';
+  
+  $app_settings_output = array(
+    'settings' => array(
+      'theme' => array(
+        'brand' => array(),
+        'layout' => array()
+        ),
+      ),
+    );
 
-  dpm('form submit');
+  foreach($app_settings as $key => $app_setting) {
+    // Set branding endpoint settings.
+    if (strpos($key, $brand_setting_prefix) !== false) {
+      dpm('yes');
+      $app_settings_output['settings']['theme']['brand'][$key] = $app_setting;
+    }
+
+    // Set layout endpoiint setting.
+    if (strpos($key, $layout_setting_prefix) !== false) {
+
+      dpm('yes');
+      $app_settings_output['settings']['theme']['layout'][$key] = $app_setting;
+    }
+
+  }
+
+  dpm(drupal_json_encode($app_settings_output));
 }
