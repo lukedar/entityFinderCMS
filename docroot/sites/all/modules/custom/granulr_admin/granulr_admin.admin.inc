@@ -51,7 +51,7 @@ function granulr_admin_form($form, &$form_state) {
 }
 
 /**
- * Get app setting values and save to granulr_app_settings var.
+ * Get app setting values and save to granulr_app_settings
  */
 function granulr_form_form_submit($form, &$form_state) {
   $app_settings = $form_state['complete form']['granulr'];
@@ -62,7 +62,9 @@ function granulr_form_form_submit($form, &$form_state) {
   $app_settings_output = array(
     'theme' => array(
       'brand' => array(),
-      'layout' => array()
+      'layout' => array(
+        'entityListings' => ''
+        )
       ),
     );
 
@@ -82,7 +84,7 @@ function granulr_form_form_submit($form, &$form_state) {
       $layout_setting['#input'] === TRUE && 
       $layout_setting['#value'] !== null) {
       
-      $app_settings_output['theme']['layout'] = $layout_setting['#value'];
+      $app_settings_output['theme']['layout']['entityListings'] = $layout_setting['#value'];
     }
   }
 
