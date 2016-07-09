@@ -13,7 +13,7 @@ function granulr_admin_menu() {
     'file' => 'granulr_admin.admin.inc',
   );
 
-  $items['app-settings'] = array(
+  $items['api/v1/app-config'] = array(
     'access callback'   => true, 
     'page callback'     => 'granular_app_settings', 
     'delivery callback' => 'drupal_json_output' 
